@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>FitTrack Lite</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+</head>
+<body>
+  <h1>FitTrack Lite</h1>
+  <button id="connect">Connect Fitbit</button>
+  <div id="stats" hidden>
+    <h2>Today</h2>
+    <ul id="list"></ul>
+  </div>
+
+  <script>
+    const btn = document.getElementById('connect');
+    const stats = document.getElementById('stats');
+    const list = document.getElementById('list');
+
+    // Redirect to OAuth
+    btn.onclick = () => location.href = '/auth/fitbit';
+
+    // If we came back from /callback, fetch JSON
+    if (location.pathname === '/callback') {
+      fetch(location.href)
+        .then(r => r.json())
+        .then(data => {
+          stats.hidden = false;
+          list.innerHTML = `
+            <li>Steps: ${data.summary.steps}</li>
+            <li>Calories: ${data.summary.caloriesOut}</li>
+            <li>Distance: ${data.summary.distances[0].distance} km</li>
+          `;
+          history.replaceState({}, '', '/');
+        });
+    }
+  </script>
+</body>
+</html>
